@@ -102,8 +102,8 @@ boot(void)
 	kprintf("%s", harvard_copyright);
 	kprintf("\n");
 
-	kprintf("Daksh's system version %s (%s #%d)\n",
-		GROUP_VERSION, buildconfig, buildversion);
+	kprintf("Daksh's system version %s (%s #%d)\t%s\n",
+		GROUP_VERSION, buildconfig, buildversion, "daksh204singh@gmail.com");
 	kprintf("\n");
 
 	/* Early initialization. */
