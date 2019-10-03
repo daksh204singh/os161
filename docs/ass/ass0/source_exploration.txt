@@ -1,0 +1,54 @@
+Q.1	What function initializes the kernel during boot, and what subsystems are currently initialized?
+A.1	static void boot(void)
+	subsystems initializations:- ram, kernal processi, kernel thread, thread, hardclock, vfs, mainbus, pseudo-devices, virtual memory, starts cpus, test161, vfs.
+
+Q.2	What VM system does your kernel use by default? What is wrong with it?
+A.2	By default, the VM system uses dumbvm. dumbvm is present to just make os161 struggle off the ground. There are lot of things wrong with dumbvm, mainly:- 
+	1. dumbvm does not tracks page allocation and thus cannot free memory.  
+	2. dumbvm ignores all the read, write and execute flags set up on the address space region.
+	3. when free_kpages(), it allows to simply leak the memory.
+	4. It always create read-write pages no matter the flag. 
+
+Q.3	OS/161 ships with two working synchronization primitives. What are they?
+A.3 It comes with semaphores and spinlocks
+
+Q.4	How do you create a thread in OS/161? Give some examples of code that currently creates multiple threads.
+A.4 int thread_fork() is used to create a thread in OS/161.
+	function prototype:- 
+		thread_fork(const char *name, struct proc *proc, void(*entrypoint)(void *data1, unsigned long data2), void *data1, unsigned long data2)
+	Code example:- 
+		result = thread_fork(args[0], proc, cmd_progthread, args, nargs) inside common_prog function inside menu.c, common_prog provides functionalities to run program for cmd_prog and cmd_shell.
+		result = thread_fork(args[0], NULL, cmd_deadlockthread, &dl); inside cmd_deadlock function defined in menu.c. cmd_deadlock is used for intentional deadlock. 
+	thread_fork is currently used in various tests. 
+
+Q.5	OS/161 has a system for printing debugging messages to the console. How does it work? How could it be useful?
+A.5	OS/161 uses kprintf to print debugging messages to the console, kprintf in turn calls vnprintf to print those messages on the console. It can be useful to print values of variables in question. 
+
+Q.6 What do copyin and copyout do? What is special about these functions compared to other approaches to copying memory in C, like memmove?
+A.6 copyin copies a block of memory from user-space address to kernel-space address
+	copyout copies a block of memory from a kernel-space address.
+	copyin and copyout is a kernel functionality to move data from kernel to userspace and vice-versa. copyin and copyout uses memcpy to copy in and out. memcpy requires that the source and destination memory space do not overlap, whereas memmove uses a temporary buffer to perform copy operation, allowing the memory space for the copy and paste operation to be overlapped. 
+
+Q.7	What is a zombie thread?
+A.7	Zombies are threads that have exited but still need to have thread_destry called on them.
+
+Q.8	What is the difference between a thread sleeping and a thread yielding?
+A.8	When a thread is sleeping, it's threadstate_t is S_SLEEP. It does race for resources and has to be woken up by putting them into c_runqueue of a cpu. When thread yields, it calls thread_switch, which switches from the current thread running on the cpu to some other thread on the wc_channel. The context of the thread is saved in the switchframe of the thread. switchframe is generally called process block.
+
+Q.9	Explain the difference between machine dependent and machine independent code. Where would you put both in the OS/161 source tree?
+A.9	Machine dependent code is the code which is written for a specific architecture(in this case mips and sys161), while machine independent code can run on any architecture. In OS/161 tree, machine dependent code of the kernel, 
+	mips: 	kern/arch/mips
+	sys161:	kern/arch/sys161
+for common code used by both kernel and userland
+	common/libc/arch
+for userland
+	userland/lib/crt0		// crt stands for c runtime
+	userland/arch/mips
+for machine independent code of the kernel, the code will be placed inside the kern, common, and all other places where the code where machine dependent code is not placed. 
+
+Q.10 What functions are used to enable and restore interrupts? Would this be sufficient to ensure mutual exclusion on an OS/161 kernel?
+A.10 OS/161 does not support multiple levels of interrupt priority levels, thus decreasing the complexity for implementing interrupt priority levels. OS/161 can only turn off and turn on interrupts 	
+		splraise(): raises the priority level, diables all the interrupts.
+		spllower(): lowers the priority level, enables all the interrupts. 
+		splx(int):	sets the priority level passed, disables or enable interrupts depending on the previous level and passed level. // (old < new) ? spllower() : splraise().
+	 All the functions return the old interrupt priority level.
