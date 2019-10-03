@@ -157,15 +157,7 @@ lock_create(const char *name)
 	HANGMAN_LOCKABLEINIT(&lock->lk_hangman, lock->lk_name);
 
 	// add stuff here as needed
-	lock->lk_wchan = wchan_create(name);	
-	if(lock->lk_wchan == NULL) {
-		kfree(lock->lk_name);
-		kfree(lock);
-		return NULL;
-	}
 
-	spinlock_init(&lock->lk_lock);
-	
 	return lock;
 }
 
@@ -175,8 +167,6 @@ lock_destroy(struct lock *lock)
 	KASSERT(lock != NULL);
 
 	// add stuff here as needed
-	wchan_destroy(lock->lk_wchan);
-	spinlock_cleanup(lock->lk_lock);
 
 	kfree(lock->lk_name);
 	kfree(lock);
@@ -185,9 +175,6 @@ lock_destroy(struct lock *lock)
 void
 lock_acquire(struct lock *lock)
 {
-	KASSERT(lock != NULL);
-	
-	KASSERT(curthread->t_in_interrupt == false);
 	/* Call this (atomically) before waiting for a lock */
 	//HANGMAN_WAIT(&curthread->t_hangman, &lock->lk_hangman);
 
