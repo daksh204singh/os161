@@ -273,8 +273,6 @@ cv_create(const char *name)
 	}
 
 	spinlock_init(&cv->cv_lock);
-	cv->cv_wcthreads_count = 0;
-	cv->cv_broadcast = false;
 
 	return cv;
 }
@@ -299,7 +297,6 @@ cv_wait(struct cv *cv, struct lock *lock)
 	KASSERT(lock_do_i_hold(lock));
 
 	spinlock_acquire(&cv->cv_lock);
-	cv->cv_wcthreads_count++;
 	lock_release(lock);
 	wchan_sleep(cv->cv_wchan, &cv->cv_lock);
 	spinlock_release(&cv->cv_lock);
@@ -318,8 +315,6 @@ cv_signal(struct cv *cv, struct lock *lock)
 	KASSERT(lock_do_i_hold(lock));
 
 	spinlock_acquire(&cv->cv_lock);
-	KASSERT(cv->cv_wcthreads_count > 0);
-	cv->cv_wcthreads_count--;
 	wchan_wakeone(cv->cv_wchan, &cv->cv_lock);
 	spinlock_release(&cv->cv_lock);
 	// (void)cv;    // suppress warning until code gets written
@@ -335,8 +330,6 @@ cv_broadcast(struct cv *cv, struct lock *lock)
 	KASSERT(lock_do_i_hold(lock));
 
 	spinlock_acquire(&cv->cv_lock);
-	KASSERT(cv->cv_wcthreads_count > 0);
-	cv->cv_wcthreads_count = 0;
 	wchan_wakeall(cv->cv_wchan, &cv->cv_lock);
 	spinlock_release(&cv->cv_lock);
 	// (void)cv;    // suppress warning until code gets written

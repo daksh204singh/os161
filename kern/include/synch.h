@@ -122,8 +122,6 @@ struct cv {
         // (don't forget to mark things volatile as needed)
 		struct wchan *cv_wchan;
 		struct spinlock cv_lock;
-		volatile unsigned cv_wcthreads_count;
-		volatile bool cv_broadcast;
 };
 
 struct cv *cv_create(const char *name);
