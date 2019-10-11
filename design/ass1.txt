@@ -1,3 +1,0 @@
-Design doc of ASSIGNMENT 1
-
-Implementing 

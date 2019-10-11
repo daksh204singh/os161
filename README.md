@@ -119,6 +119,8 @@ Inside the gdb connect to the sys161 socket(you have to be in the directory wher
 ```console
 (gdb) target remote unix:.sockets/gdb
 ```
+## Design Docs
+**Design docs are in design/ subdirectory.**
 
 ## References
 * https://www.ops-class.org/asst/0/
