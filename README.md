@@ -87,7 +87,7 @@ The kernel sources are inside the kern/ subdirectory. The kern directory contain
   * kern/fs/sfs: contains implementation of simple file system.
 
 ## OS/161, System/161 and toolchain 
-OS/161, System/161 and its toolchain can be downloaded from http://os161.eecs.harvard.edu/download/
+OS/161, System/161 and its toolchain can be downloaded from http://os161.eecs.harvard.edu/download/. 
 The OS/161 toolchain includes:- 
 	
 * binutils package: it includes a collection of programs for creating and managing binary programs, object file, profile data, and assembly source code. Some programs are linker, assembler. It is GNU binutils for OS/161.
