@@ -37,6 +37,7 @@ The kernel sources are inside the kern/ subdirectory. The kern directory contain
 	* Makefile: The Makefile installs header files. 
 	
 	* kern/arch: This directory contains the architecture-specific code. Inside it their are two subdirectories: mips, which contains the code specific to the mips processor and sys161, which contains code for the System/161 machine simulator.
+		
 		* kern/arch/mips/conf: The directory contains the mips-specific configuration files.
 			* kern/arch/mips/conf/conf.arch: file is responsible for specfying machine dependent sources required by the kernel.
 			* kern//arch/mips/conf/ldscript: Tells the linker how to link the kernel.
@@ -46,16 +47,22 @@ The kernel sources are inside the kern/ subdirectory. The kern directory contain
 		* kern/arch/sys161/include: These files are include file for the System/161 specific hardware, constants, and functions.
 		* kern/arch/sys161/main/start.S: This is the entry point for the kernel. It sets up the stack frame, exception handling, etc for the kernel. 
 		* kern/arch/sys161/dev: contains System/161 device code.
+	
 	* kern/compile/: This is the directory where the kernel builds. Here, you will find one subdirectory for each, kernel configuration target.
 	* kern/test/: This directory contains kernel tests.
 	* kern/dev/: This directory contains all the low-level device management code.
 	* kern/include: This directory contains all the include files required by the kernel.	
+		
 		* kern/include/kern: This directory contains include files that are visible to both the kernel and the user programs.
+	
 	* kern/lib/: These contain library code used throughout the kernel: arrays, kerenl printf(kprintf), etc.
 	* kern/main/: This directory contains the kernel main and menu functions of the kernel.
+		
 		* kern/main/main.c: initializes the kernel. Executes the menu.
 		* kern/main/menu.c: contains the command menu functions.
+	
 	* kern/thread/: The directory contains the code implementing the thread abstraction and synchronization primitives.
+		
 		* kern/thread/clock.c: contains time handling functions. 
 		* kern/thread/hangman.c: contains implementation of simple deadlock detector. 
 		* kern/thread/spinlock.c: contains implementation of spinlock.
@@ -63,14 +70,18 @@ The kernel sources are inside the kern/ subdirectory. The kern directory contain
 		* kern/thread/synch.c: contains implementation of synchronization primitives available to the kernel. TO BE IMPLEMENTED IN ASST1
 		* kern/thread/thread.c: contains core kernel-level thread system.
 		* kern/thread/threadlist.c: contais threadlist functions.
+	
 	* kern/synchprobs.c: contains code for synchronization problems, whalemating and stoplight.
 	* kern/syscall/: contains code to create and manage user level processes. TO BE IMPLEMNETED IN ASST2
+		
 		* kern/syscall/loadelf.c: contains code that loads ELF(Executable and Linkable Format) executable.
 		* kern/syscall/runprogram.c: contains sample/test code for running a user program.
 		* kern/syscall/time_syscalls.c: sample syscall that returns the time of the day. 
+	
 	* kern/vm/: contains implementation of virtual memory. TO BE DONE IN ASST3
 	* kern/vfs/: 'vfs' stands for virtual file system. It provides a framework to add new file systems.
 	* kern/fs/: Contains the actual file system implementation.
+		
 		* kern/fs/sfs: contains implementation of simple file system.
 
 ## OS/161, System/161 and toolchain 
