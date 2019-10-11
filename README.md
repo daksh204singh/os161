@@ -28,8 +28,8 @@ The userland/ sub directory contains user space libraries and program code.
 * bin/: all the utilities that are typically found in /bin/—`cat`, cp, ls, etc. Programs in /bin/ are considered fundamental utilities that the system needs to run.
 * include/: these are the include files that you would typically find in /usr/include (in our case, a subset of them). These are user include files, not kernel include files.
 * lib/: library code lives here. We have only two libraries: libc, the C standard library, and hostcompat, which is for recompiling OS/161 programs for the host UNIX system. There is also a crt0 directory, which contains the startup code for user programs.
-  * sbin/: this is the source code for the utilities typically found in /sbin on a typical UNIX installation. In our case, there are some utilities that let you halt the machine, power it off, and reboot it, among other things.
-  * testbin/: these are pieces of test code that we will use to test and grade your assignments.
+* sbin/: this is the source code for the utilities typically found in /sbin on a typical UNIX installation. In our case, there are some utilities that let you halt the machine, power it off, and reboot it, among other things.
+* testbin/: these are pieces of test code that we will use to test and grade your assignments.
 
 ### kernel sources
 The kernel sources are inside the kern/ subdirectory. The kern directory contains:- 
@@ -77,7 +77,7 @@ The kernel sources are inside the kern/ subdirectory. The kern directory contain
 * kern/syscall/: contains code to create and manage user level processes. TO BE IMPLEMNETED IN ASST2
   * kern/syscall/loadelf.c: contains code that loads ELF(Executable and Linkable Format) executable.
   * kern/syscall/runprogram.c: contains sample/test code for running a user program.
-  * kern/syscall/time_syscalls.c: sample syscall that returns the time of the day. 
+  * kern/syscall/time\_syscalls.c: sample syscall that returns the time of the day. 
 
 * kern/vm/: contains implementation of virtual memory. TO BE DONE IN ASST3
 
@@ -90,15 +90,15 @@ The kernel sources are inside the kern/ subdirectory. The kern directory contain
 OS/161, System/161 and its toolchain can be downloaded from http://os161.eecs.harvard.edu/download/
 The OS/161 toolchain includes:- 
 	
-	* binutils package: it includes a collection of programs for creating and managing binary programs, object file, profile data, and assembly source code. Some programs are linker, assembler. It is GNU binutils for OS/161.
-	
-	* gcc: GCC is GNU's Compiler collection for OS/161.
-	
-	* gdb: GDB is GNU's debugger for OS/161
-	
-	* bmake: It is BSD is make. It is different from GNU's make.
-	
-	* mk: BSD make's make library.
+* binutils package: it includes a collection of programs for creating and managing binary programs, object file, profile data, and assembly source code. Some programs are linker, assembler. It is GNU binutils for OS/161.
+
+* gcc: GCC is GNU's Compiler collection for OS/161.
+
+* gdb: GDB is GNU's debugger for OS/161
+
+* bmake: It is BSD is make. It is different from GNU's make.
+
+* mk: BSD make's make library.
 
 
 ## Running the kernel
