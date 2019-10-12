@@ -1,4 +1,4 @@
-#ASS1
+# ASS1
 
 ## Spinlock
 Spinlock is a lock that makes a thread acquiring  wait in a loop ("busy waiting") until the lock becomes free. The spinlock is used to prevent access to small critical sections to avoid the overhead related to other locks that makes the thread go to sleep and switching threads.
@@ -161,4 +161,5 @@ void cv_broadcast(struct cv *cv, struct lock *lock);
 * cvt3: Tests the cv\_signal() function. Tries to wait on the cv without acquiring the lock. cv\_wait according to semantics require the lock to be acquired as it releases in its implementaion and goes to sleep. panics on sucess and returns 0 on failure.
 * cvt4: tests cv\_broadcast function semantics. Calls cv\_broadcast() on the cv without acquiring the lock. If it follows the cv follows cv semantics, the kernel should panic. panics on success, returns 0 on failure.   
 * cvt5: Focuses on inter-thread communication between the driver thread, sleeperthread and wakerthread. returns 0 on success, panics on failure. 
+
 **Tests for conditional variables are in kern/test/synchtest.c**
