@@ -174,7 +174,7 @@ Reader-Writer locks(single-writer lock, multi-reader lock) is a lock that allows
   
   Implementing the above would be complex and will require to modify many interfaces provided by OS/161 and implement many new interfaces. I will not be using this approach for implementing RW locks.
   
-  **Tried to implement the above, got overwhelmed**
+  **Was not able to implement FIFO Reader writer locks**
   
 * Read preferring RW lock
   * Allows improved concurrency but will starve writer, as readers will be given higher priority in comparison to writers. Starvation may occur when readers keep acquring the lock and executing not allowing a writer to acquire the lock.
