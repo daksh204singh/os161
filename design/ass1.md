@@ -171,8 +171,11 @@ Reader-Writer locks(single-writer lock, multi-reader lock) is a lock that allows
 	* Create a new threadlist and threadlistnode implementation. 
 	* Create a new FIFO wait channel by using the newly implemented threadlist and threadlistnode.
     * Integrate the implemented data structures with the thread, and cpu abstractions
+  
   Implementing the above would be complex and will require to modify many interfaces provided by OS/161 and implement many new interfaces. I will not be using this approach for implementing RW locks.
+  
   **Tried to implement the above, got overwhelmed**
+  
 * Read preferring RW lock
   * Allows improved concurrency but will starve writer, as readers will be given higher priority in comparison to writers. Starvation may occur when readers keep acquring the lock and executing not allowing a writer to acquire the lock.
 * Writer preferring lock
