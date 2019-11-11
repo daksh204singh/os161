@@ -163,3 +163,17 @@ void cv_broadcast(struct cv *cv, struct lock *lock);
 * cvt5: Focuses on inter-thread communication between the driver thread, sleeperthread and wakerthread. returns 0 on success, panics on failure. 
 
 **Tests for conditional variables are in kern/test/synchtest.c**
+
+Reader Writer Locks (RW locks)
+Reader-Writer locks(single-writer lock, multi-reader lock) is a lock that allows concurrent access to read only threads and exclusive access to threads that can perform write operations. When reader is executing, other reader threads can access the shared data, but writers will be blocked. When a writer is executing, readers as well as writers will be blocked. This lock provides higher concurrency but can lead to writer starvation in read-preference rwlocks, and reader starvation, in writer preference locks. Possible implementation for solving the above issues:- 
+* FIFO access to threads.
+  * Many concerns emerged while implementing FIFO RW locks. The wait channel interface provided by OS/161 does not promise FIFO wakeup of thread. The reason behind using wchan as our wait channel and not implementing a new wait queue is that it uses threadlist as its data structure for storing sleeping threads. **'struct threadlist'** uses **'threadlistnode'** as its node. **struct thread** used to abstract threads creates a **threadlistnode** for maintaing cpu lists (zombies, run, sleep). wchan integration with other kernel data structures like threadlist and threadlistnode makes it an efficient implementation. OS/161 lacks support for implementing of a wait channel for FIFO implementation. Implementing a FIFO implementation would require us to:-
+	* Create a new threadlist and threadlistnode implementation. 
+	* Create a new FIFO wait channel by using the newly implemented threadlist and threadlistnode.
+    * Integrate the implemented data structures with the thread, and cpu abstractions
+  Implementing the above would be complex and will require to modify many interfaces provided by OS/161 and implement many new interfaces. I will not be using this approach for implementing RW locks.
+* Read preferring RW lock
+  * Allows improved concurrency but will starve writer, as readers will be given higher priority in comparison to writers. Starvation may occur when readers keep acquring the lock and executing not allowing a writer to acquire the lock.
+* Writer preferring lock
+  * Reduces concurrency as writers are given preference acquring exclusive access on the lock. Results in reader starvation when multiple writers keep acquiring the lock and executing making readers unable to acquire the lock.
+* 
