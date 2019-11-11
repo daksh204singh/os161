@@ -158,10 +158,17 @@ struct rwlock {
         char *rwlock_name;
         // add what you need here
         // (don't forget to mark things volatile as needed)
+		struct lock *rw_lock;
+		struct cv *rw_cvread;
+		struct cv *rw_cvwrite;
+		volatile unsigned rw_hold_readers;
+		volatile bool rw_writer_in;
+		volatile unsigned rw_readers_in;
+		volatile unsigned rw_writers_wt;
 };
 
-struct rwlock * rwlock_create(const char *);
-void rwlock_destroy(struct rwlock *);
+struct rwlock * rwlock_create(const char *name);
+void rwlock_destroy(struct rwlock *rwlock);
 
 /*
  * Operations:
@@ -175,9 +182,9 @@ void rwlock_destroy(struct rwlock *);
  * These operations must be atomic. You get to write them.
  */
 
-void rwlock_acquire_read(struct rwlock *);
-void rwlock_release_read(struct rwlock *);
-void rwlock_acquire_write(struct rwlock *);
-void rwlock_release_write(struct rwlock *);
+void rwlock_acquire_read(struct rwlock *rwlock);
+void rwlock_release_read(struct rwlock *rwlock);
+void rwlock_acquire_write(struct rwlock *rwlock);
+void rwlock_release_write(struct rwlock *rwlock);
 
 #endif /* _SYNCH_H_ */

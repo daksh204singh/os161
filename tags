@@ -5651,8 +5651,21 @@ runthreads	kern/test/threadtest.c	/^runthreads(int doloud)$/;"	f	file:
 rusage	.root/hostinclude/kern/resource.h	/^struct rusage {$/;"	s
 rusage	.root/include/kern/resource.h	/^struct rusage {$/;"	s
 rusage	kern/include/kern/resource.h	/^struct rusage {$/;"	s
+rw_cvread	kern/include/synch.h	/^		struct cv *rw_cvread;$/;"	m	struct:rwlock	typeref:struct:rwlock::cv
+rw_cvwrite	kern/include/synch.h	/^		struct cv *rw_cvwrite;$/;"	m	struct:rwlock	typeref:struct:rwlock::cv
+rw_hold_readers	kern/include/synch.h	/^		volatile unsigned rw_hold_readers;$/;"	m	struct:rwlock
+rw_lock	kern/include/synch.h	/^		struct lock *rw_lock;$/;"	m	struct:rwlock	typeref:struct:rwlock::lock
+rw_readers_in	kern/include/synch.h	/^		volatile unsigned rw_readers_in;$/;"	m	struct:rwlock
+rw_writer_in	kern/include/synch.h	/^		volatile bool rw_writer_in;$/;"	m	struct:rwlock
+rw_writers_wt	kern/include/synch.h	/^		volatile unsigned rw_writers_wt;$/;"	m	struct:rwlock
 rwlock	kern/include/synch.h	/^struct rwlock {$/;"	s
+rwlock_acquire_read	kern/thread/synch.c	/^rwlock_acquire_read(struct rwlock *rwlock)$/;"	f
+rwlock_acquire_write	kern/thread/synch.c	/^rwlock_acquire_write(struct rwlock *rwlock)$/;"	f
+rwlock_create	kern/thread/synch.c	/^rwlock_create(const char *name)$/;"	f
+rwlock_destroy	kern/thread/synch.c	/^rwlock_destroy(struct rwlock *rwlock)$/;"	f
 rwlock_name	kern/include/synch.h	/^        char *rwlock_name;$/;"	m	struct:rwlock
+rwlock_release_read	kern/thread/synch.c	/^rwlock_release_read(struct rwlock *rwlock)$/;"	f
+rwlock_release_write	kern/thread/synch.c	/^rwlock_release_write(struct rwlock *rwlock)$/;"	f
 rwtest	kern/test/rwtest.c	/^int rwtest(int nargs, char **args) {$/;"	f
 rwtest2	kern/test/rwtest.c	/^int rwtest2(int nargs, char **args) {$/;"	f
 rwtest3	kern/test/rwtest.c	/^int rwtest3(int nargs, char **args) {$/;"	f

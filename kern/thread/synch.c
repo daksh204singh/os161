@@ -335,3 +335,179 @@ cv_broadcast(struct cv *cv, struct lock *lock)
 	// (void)cv;    // suppress warning until code gets written
 	// (void)lock;  // suppress warning until code gets written
 }
+
+////////////////////////////////////////////////////////////
+//
+// RW lock
+
+struct rwlock *
+rwlock_create(const char *name)
+{
+	struct rwlock *rwlock = kmalloc(sizeof(*rwlock));
+	if (rwlock == NULL)
+		return NULL;
+
+	rwlock->rw_name = kstrdup(name);
+	if (rwlock->rw_name == NULL) {
+		kfree(rwlock);
+		return NULL;
+	}
+
+	rwlock->rw_lock = lock_create(rwlock->rw_name);
+	if (rwlock->rw_lock == NULL) {
+		kfree(rwlock->rw_name);
+		kfree(rwlock);
+		return NULL;
+	}
+
+	rwlock->rw_cvread = cv_create(rwlock->rw_name);
+	if (rwlock->rw_cvread == NULL) {
+		kfree(rwlock->rw_lock);
+		kfree(rwlock->rw_name);
+		kfree(rwlock);
+		return NULL;
+	}
+
+	rwlock->rw_cvwrite = cv_create(rwlock->rw_name);
+	if (rwlock->rw_cvwrite == NULL) {
+		kfree(rwlock->rw_cvread);
+		kfree(rwlock->rw_lock);
+		kfree(rwlock->rw_name);
+		kfree(rwlock);
+		return NULL;
+	}
+
+	rwlock->rw_hold_readers = false;
+	rwlock->rw_writer_in = false;
+	rwlock->rw_readers_in = 0;
+	rwlock->rw_writers_wt = 0;
+
+	return rwlock;
+}
+
+void
+rwlock_destroy(struct rwlock *rwlock)
+{
+	KASSERT(rwlock != NULL);
+	KASSERT(rwlock->rw_writer_in == false && rwlock->rw_readers_in == 0);
+
+	lock_destroy(rwlock->rw_lock);
+	cv_destroy(rwlock->rw_cvread);
+	cv_destroy(rwlock->rw_cvwrite);
+	kfree(rwlock);
+}
+
+void
+rwlock_acquire_read(struct rwlock *rwlock)
+{
+	KASSERT(rwlock != NULL);
+	lock_acquire(rwlock->rw_lock);
+
+	while (rwlock->rw_hold_readers == true || rwlock->rw_writer_in == true) {
+		/*
+		 * hold reader if their is a writer which tried to acquire the rwlock
+		 * before it but was not able too, or hold it if their is a writer waiting.
+		 */
+		cv_wait(rwlock->rw_cvread, rwlock->rw_lock);
+	}
+	rwlock->rw_readers_in++;
+	lock_release(rwlock->rw_lock);
+}
+
+void
+rwlock_release_read(struct rwlock *rwlock)
+{
+	KASSERT(rwlock != NULL);
+	KASSERT(rwlock->rw_readers_in > 0);
+	KASSERT(rwlock->rw_writer_in == false);
+
+	lock_acquire(rwlock->rw_lock);
+
+	rwlock->rw_readers_in--;
+	if (rwlock->rw_hold_readers == true && rwlock->rw_readers_in > 0) {
+		/*
+		 * When writers are waiting for the lock and 
+		 * readers are still executing, let the readers finish.
+		 */
+	} else if (rwlock->rw_hold_readers == true  && rwlock->rw_reader_in == 0) {
+		/*
+		 * writers are wating, and all the readers are done executing
+		 * Signal each reader and writer from their wait channel 
+		 * using their conditional variables.
+		 * We are doing so because each reader and writer and should get a fair 
+		 * chance to execute.
+		 */
+		rwlock->rw_hold_readers = false;
+		cv_signal(rwlock->rw_cvread, rwlock->rw_lock);
+		cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
+	} else {
+		/*
+		 * No writers are waiting for the rwlock.
+		 * Broadcast all readers.
+		 */
+		cv_broadcast(rwlock->rw_cvread, rwlock->rw_lock);
+	}
+		
+	lock_release(rwlock->rw_lock);
+}
+
+void
+rwlock_acquire_write(struct rwlock *rwlock)
+{
+	KASSERT(rwlock != NULL);
+	lock_acquire(rwlock->rw_lock);
+	
+	rwlock->rw_writers_wt++;
+	while (rwlock->rw_readers_in > 0 || rwlock->rw_writer_in == true) {
+		/*
+		 * If readers are executing or a writer is executing,  make the writer wait for
+		 * the lock, until all the readers who have acquired the
+		 * rwlock are done.
+		 */
+		rwlock->rw_hold_readers = true;
+		cv_wait(rwlock->rw_cvwrite, rwlock->rw_lock);
+	}
+	/*
+	 * We are in writer now, stop holding the readers
+	 * and let them compete with other threads to acquire the lock.
+	 */
+	rwlock->rw_hold_readers = false;
+	rwlock->rw_writer_in = true;
+	rwlock->rw_writer_wt--;
+	
+	lock_release(rwlock->rw_lock);
+}
+
+void
+rwlock_release_write(struct rwlock *rwlock)
+{
+	KASSERT(rwlock != NULL);
+	KASSERT(rwlock->rw_writer_in == true);
+	KASSERT(rwlock->rw_readers_in == 0);
+	
+	lock_acquire(rwlock->rw_lock);
+
+	rwlock->rw_writer_in = false;
+	if (rwlock->rw_writers_wt == 0 && rwlock->rw_hold_readers == false) { 	// Last writer seen so far
+		/*
+		 * If no writers are waiting, 
+		 * call cv_broadcast on the cvread, to allow
+		 * all readers to use the rwlock.
+		 */
+		cv_broadcast(rwlock->rw_cvread, rwlock->rw_lock);
+	} else {
+		/*
+		 * Writers are waiting, and probaby readers
+		 * are waiting too, though it does not matter
+		 * if they are waiting or not as calling 
+		 * cv_broadcast on the cv_write will not do any good,
+		 * as they require exclusive access.
+		 * And even cv_signal does not guarantee who is going
+		 * to run so we caring for the order of execution is pointless.
+		 */
+		cv_signal(rwlock->rw_cvread, rwlock->rw_lock);
+		cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
+	}
+
+	lock_release(rwlock->rw_lock);
+}

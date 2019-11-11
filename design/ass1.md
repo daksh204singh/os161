@@ -127,14 +127,14 @@ void cv_destroy(struct cv *);
  * Operations:
  *    cv_wait      - Release the supplied lock, go to sleep, and, after
  *                   waking up again, re-acquire the lock.
- *    cv_signal    - Wake up one thread that's sleeping on this CV.
- *    cv_broadcast - Wake up all threads sleeping on this CV.
+ *    cv\_signal    - Wake up one thread that's sleeping on this CV.
+ *    cv\_broadcast - Wake up all threads sleeping on this CV.
  *
  * For all three operations, the current thread must hold the lock passed
  * in. Note that under normal circumstances the same lock should be used
  * on all operations with any particular CV.
  *
- * These operations are atomic and implemented by acquring cv_lock(spinlock). 
+ * These operations are atomic and implemented by acquring cv\_lock(spinlock). 
  */
 
 void cv_wait(struct cv *cv, struct lock *lock);
@@ -172,8 +172,57 @@ Reader-Writer locks(single-writer lock, multi-reader lock) is a lock that allows
 	* Create a new FIFO wait channel by using the newly implemented threadlist and threadlistnode.
     * Integrate the implemented data structures with the thread, and cpu abstractions
   Implementing the above would be complex and will require to modify many interfaces provided by OS/161 and implement many new interfaces. I will not be using this approach for implementing RW locks.
+  **Tried to implement the above, got overwhelmed**
 * Read preferring RW lock
   * Allows improved concurrency but will starve writer, as readers will be given higher priority in comparison to writers. Starvation may occur when readers keep acquring the lock and executing not allowing a writer to acquire the lock.
 * Writer preferring lock
   * Reduces concurrency as writers are given preference acquring exclusive access on the lock. Results in reader starvation when multiple writers keep acquiring the lock and executing making readers unable to acquire the lock.
-* 
+  * **Unspecified priority lock**:  have implemented this lock for this assignment. The lock's structure is as follows:- 
+### Structure of RW lock
+  ```c
+  	struct rwlock {
+        char *rw\_name;
+        // add what you need here
+        // (don't forget to mark things volatile as needed)
+		struct lock *rw_lock;
+		struct cv *rw_cvread;
+		struct cv *rw_cvwrite;
+		volatile unsigned rw_hold_readers;
+		volatile bool rw_writer_in;
+		volatile unsigned rw_readers_in;
+		volatile unsigned rw_writers_wt;
+	};
+
+  ```
+### Functions of RW lock
+```c
+/*
+ * rwlock_create - 	Allocates memory, initializes memory and returns a pointer to a 
+ 				   	rwlock. Takes a string as a parameter for debugging purposes.
+ * rwlock_destroy - Deallocates memory allocated to its members and the rwlock. 
+ 					Must not be acquired by any reader or writer. 
+					Panics if destroy was called on an acquired rwlock. 
+ */
+struct rwlock * rwlock_create(const char *name);
+void rwlock_destroy(struct rwlock *rwlock);
+
+/*
+ * Operations:
+ *    rwlock_acquire_read  - Get the lock for reading. Multiple threads can
+ *                          hold the lock for reading at the same time.
+ *    rwlock_release_read  - Free the lock if their are no readers are currently
+ * 							executing in parallel.
+ *    rwlock_acquire_write - Get the lock for writing. Only one thread can
+ *                           hold the write lock at one time.
+ *    rwlock_release_write - Free the write lock.
+ *
+ * These operations must be atomic. You get to write them.
+ * For implementation details, please refer kern/thread/synch.c
+ */
+
+void rwlock_acquire_read(struct rwlock *rwlock);
+void rwlock_release_read(struct rwlock *rwlock);
+void rwlock_acquire_write(struct rwlock *rwlock);
+void rwlock_release_write(struct rwlock *rwlock);
+```
+The rwlock interface does not allow any reader or writer starve while waiting for the lock. It does not enforces any order of execution of threads.
