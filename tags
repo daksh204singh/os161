@@ -229,6 +229,7 @@ COMPUTE_ITERS	kern/test/tt3.c	50;"	d	file:
 CONFNAME	kern/compile/ASST1/Makefile	/^CONFNAME=ASST1$/;"	m
 CONSOLE_INPUT_BUFFER_SIZE	kern/dev/generic/console.h	40;"	d
 CPU_FREQUENCY	kern/arch/sys161/dev/lamebus_machdep.c	54;"	d	file:
+CREATELOOPS	kern/test/rwtest.c	17;"	d	file:
 CREATELOOPS	kern/test/synchtest.c	46;"	d	file:
 CST_BEV	kern/arch/mips/include/specialreg.h	69;"	d
 CST_BEV	kern/compile/ASST1/includelinks/machine/specialreg.h	69;"	d
@@ -1264,6 +1265,7 @@ NONEXIST_PID	userland/testbin/badcall/config.h	54;"	d
 NO_REALLOC	userland/sbin/sfsck/compat.h	60;"	d
 NPAGEREFS_PER_PAGE	kern/vm/kmalloc.c	183;"	d	file:
 NPROCS	userland/testbin/dirconc/dirconc.c	48;"	d	file:
+NRWLOOPS	kern/test/rwtest.c	18;"	d	file:
 NSEC_PER_MSEC	common/libtest161/secure.c	43;"	d	file:
 NSEC_PER_MSEC	userland/testbin/consoletest/consoletest.c	53;"	d	file:
 NSEMLOOPS	kern/test/synchtest.c	47;"	d	file:
@@ -1271,6 +1273,7 @@ NSIZES	kern/vm/kmalloc.c	130;"	d	file:
 NTH	kern/test/arraytest.c	37;"	d	file:
 NTHREADS	kern/test/fstest.c	56;"	d	file:
 NTHREADS	kern/test/kmalloctest.c	65;"	d	file:
+NTHREADS	kern/test/rwtest.c	19;"	d	file:
 NTHREADS	kern/test/synchtest.c	50;"	d	file:
 NTHREADS	kern/test/threadtest.c	39;"	d	file:
 NTHREADS	userland/testbin/userthreads/userthreads.c	55;"	d	file:
@@ -2059,6 +2062,7 @@ SWAP64	userland/sbin/mksfs/mksfs.c	52;"	d	file:
 SWAP64	userland/sbin/sfsck/compat.h	51;"	d
 SWAP64	userland/sbin/sfsck/compat.h	57;"	d
 SWAP_FS	kern/vfs/vfslist.c	86;"	d	file:
+SYNCHTEST_YIELDER_MAX	kern/test/rwtest.c	20;"	d	file:
 SYNCHTEST_YIELDER_MAX	kern/test/synchtest.c	51;"	d	file:
 SYS161_PRID_2X	kern/arch/mips/thread/cpu.c	111;"	d	file:
 SYS161_PRID_ORIG	kern/arch/mips/thread/cpu.c	110;"	d	file:
@@ -3660,7 +3664,7 @@ buflen	common/libc/printf/snprintf.c	/^	size_t buflen;$/;"	m	struct:__anon31	fil
 bufpos	common/libc/printf/snprintf.c	/^	size_t bufpos;$/;"	m	struct:__anon31	file:
 buftest	userland/testbin/badcall/common_buf.c	/^struct buftest {$/;"	s	file:
 buildconfig	kern/compile/ASST1/vers.c	/^const char buildconfig[] = "ASST1";$/;"	v
-buildversion	kern/compile/ASST1/vers.c	/^const int buildversion = 1;$/;"	v
+buildversion	kern/compile/ASST1/vers.c	/^const int buildversion = 24;$/;"	v
 builtins	userland/bin/sh/sh.c	/^} builtins[] = {$/;"	v	typeref:struct:__anon29	file:
 builtins	userland/testbin/shll/shll.c	/^} builtins[] = {$/;"	v	typeref:struct:__anon25	file:
 bus_map_area	kern/arch/sys161/include/bus.h	49;"	d
@@ -3999,6 +4003,9 @@ deadlock	kern/main/menu.c	/^struct deadlock {$/;"	s	file:
 deadlock_locks	kern/test/automationtest.c	/^static struct lock *deadlock_locks[2];$/;"	v	typeref:struct:lock	file:
 deadlock_sem	kern/test/automationtest.c	/^static struct semaphore *deadlock_sem;$/;"	v	typeref:struct:semaphore	file:
 dec	userland/testbin/factorial/factorial.c	/^dec(struct number *r)$/;"	f	file:
+decrement_test_tread	kern/test/rwtest.c	/^decrement_test_tread(void) {$/;"	f	file:
+decrement_test_treading	kern/test/rwtest.c	/^decrement_test_treading(void) {$/;"	f	file:
+decrement_test_twrite	kern/test/rwtest.c	/^decrement_test_twrite(void) {$/;"	f	file:
 degrees	userland/lib/libc/stdlib/random.c	/^static const int degrees[MAX_TYPES] =	{ DEG_0, DEG_1, DEG_2, DEG_3, DEG_4 };$/;"	v	file:
 delayed_outbuf	kern/dev/generic/console.c	/^static char delayed_outbuf[DELAYBUFSIZE];$/;"	v	file:
 delayed_outbuf_pos	kern/dev/generic/console.c	/^static size_t delayed_outbuf_pos=0;$/;"	v	file:
@@ -4099,6 +4106,7 @@ dolseek	userland/testbin/bigseek/bigseek.c	/^dolseek(int fd, off_t pos, int when
 dolseek	userland/testbin/psort/psort.c	/^dolseek(const char *name, int fd, off_t offset, int whence)$/;"	f	file:
 domalloc	userland/sbin/sfsck/utils.c	/^domalloc(size_t len)$/;"	f
 domkdir	userland/testbin/dirconc/dirconc.c	/^domkdir(const char *name)$/;"	f	file:
+donesem	kern/test/rwtest.c	/^static struct semaphore *donesem = NULL;$/;"	v	typeref:struct:semaphore	file:
 donesem	kern/test/synchtest.c	/^static struct semaphore *donesem = NULL;$/;"	v	typeref:struct:semaphore	file:
 donesem	kern/test/tt3.c	/^static struct semaphore *donesem;$/;"	v	typeref:struct:semaphore	file:
 doopen	userland/testbin/psort/psort.c	/^doopen(const char *path, int flags, int mode)$/;"	f	file:
@@ -4287,6 +4295,7 @@ exorcise	kern/thread/thread.c	/^exorcise(void)$/;"	f	file:
 expect_segfault	userland/testbin/sbrktest/sbrktest.c	/^expect_segfault(segfault_fn func)$/;"	f	file:
 f	userland/testbin/badcall/driver.c	/^	void (*f)(void);$/;"	m	struct:__anon23	file:
 f	userland/testbin/crash/crash.c	/^	func f;$/;"	m	struct:__anon26	file:
+failif	kern/test/rwtest.c	/^failif(bool condition) {$/;"	f	file:
 failif	kern/test/synchprobs.c	/^failif(bool condition, const char *message) {$/;"	f	file:
 failif	kern/test/synchtest.c	/^failif(bool condition) {$/;"	f	file:
 failures	userland/testbin/bigfork/bigfork.c	/^static unsigned failures;$/;"	v	file:
@@ -4565,6 +4574,9 @@ in_pct	common/libc/printf/__printf.c	/^	int in_pct;$/;"	m	struct:__anon32	file:
 in_port_t	.root/include/sys/types.h	/^typedef __in_port_t in_port_t;$/;"	t
 in_port_t	kern/include/types.h	/^typedef __in_port_t in_port_t;$/;"	t
 in_port_t	userland/include/sys/types.h	/^typedef __in_port_t in_port_t;$/;"	t
+increment_test_tread	kern/test/rwtest.c	/^increment_test_tread(void) {$/;"	f	file:
+increment_test_treading	kern/test/rwtest.c	/^increment_test_treading(void) {$/;"	f	file:
+increment_test_twrite	kern/test/rwtest.c	/^increment_test_twrite(void) {$/;"	f	file:
 indent_to	userland/testbin/badcall/report.c	/^indent_to(size_t pos)$/;"	f	file:
 indexentry	userland/bin/tac/tac.c	/^struct indexentry {$/;"	s	file:
 indexfd	userland/bin/tac/tac.c	/^static int datafd = -1, indexfd = -1;$/;"	v	file:
@@ -5655,6 +5667,7 @@ rw_cvread	kern/include/synch.h	/^		struct cv *rw_cvread;$/;"	m	struct:rwlock	typ
 rw_cvwrite	kern/include/synch.h	/^		struct cv *rw_cvwrite;$/;"	m	struct:rwlock	typeref:struct:rwlock::cv
 rw_hold_readers	kern/include/synch.h	/^		volatile unsigned rw_hold_readers;$/;"	m	struct:rwlock
 rw_lock	kern/include/synch.h	/^		struct lock *rw_lock;$/;"	m	struct:rwlock	typeref:struct:rwlock::lock
+rw_name	kern/include/synch.h	/^        char *rw_name;$/;"	m	struct:rwlock
 rw_readers_in	kern/include/synch.h	/^		volatile unsigned rw_readers_in;$/;"	m	struct:rwlock
 rw_writer_in	kern/include/synch.h	/^		volatile bool rw_writer_in;$/;"	m	struct:rwlock
 rw_writers_wt	kern/include/synch.h	/^		volatile unsigned rw_writers_wt;$/;"	m	struct:rwlock
@@ -5663,7 +5676,6 @@ rwlock_acquire_read	kern/thread/synch.c	/^rwlock_acquire_read(struct rwlock *rwl
 rwlock_acquire_write	kern/thread/synch.c	/^rwlock_acquire_write(struct rwlock *rwlock)$/;"	f
 rwlock_create	kern/thread/synch.c	/^rwlock_create(const char *name)$/;"	f
 rwlock_destroy	kern/thread/synch.c	/^rwlock_destroy(struct rwlock *rwlock)$/;"	f
-rwlock_name	kern/include/synch.h	/^        char *rwlock_name;$/;"	m	struct:rwlock
 rwlock_release_read	kern/thread/synch.c	/^rwlock_release_read(struct rwlock *rwlock)$/;"	f
 rwlock_release_write	kern/thread/synch.c	/^rwlock_release_write(struct rwlock *rwlock)$/;"	f
 rwtest	kern/test/rwtest.c	/^int rwtest(int nargs, char **args) {$/;"	f
@@ -5672,6 +5684,8 @@ rwtest3	kern/test/rwtest.c	/^int rwtest3(int nargs, char **args) {$/;"	f
 rwtest4	kern/test/rwtest.c	/^int rwtest4(int nargs, char **args) {$/;"	f
 rwtest5	kern/test/rwtest.c	/^int rwtest5(int nargs, char **args) {$/;"	f
 rwtestmodes	userland/testbin/badcall/common_fds.c	/^enum rwtestmodes {$/;"	g	file:
+rwtestreadthread	kern/test/rwtest.c	/^rwtestreadthread(void *junk, unsigned long num) {$/;"	f	file:
+rwtestwritethread	kern/test/rwtest.c	/^rwtestwritethread(void *junk, unsigned long num) $/;"	f	file:
 s0	.root/hostinclude/kern/machine/regdefs.h	56;"	d
 s0	.root/hostinclude/kern/mips/regdefs.h	56;"	d
 s0	.root/include/kern/machine/regdefs.h	56;"	d
@@ -6261,6 +6275,7 @@ state	common/libtest161/sha256.h	/^    uint32_t state[8];          \/*!< interme
 state	userland/lib/libc/stdlib/random.c	/^static long *state = &randtbl[1];$/;"	v	file:
 state	userland/testbin/frack/check.c	/^static struct fsobject *state;$/;"	v	typeref:struct:fsobject	file:
 status_is_failure	userland/testbin/parallelvm/parallelvm.c	/^status_is_failure(int status)$/;"	f	file:
+status_lock	kern/test/rwtest.c	/^static struct spinlock status_lock;$/;"	v	typeref:struct:spinlock	file:
 status_lock	kern/test/synchprobs.c	/^struct spinlock status_lock;$/;"	v	typeref:struct:spinlock
 status_lock	kern/test/synchtest.c	/^struct spinlock status_lock;$/;"	v	typeref:struct:spinlock
 stealmem_lock	kern/arch/mips/vm/dumbvm.c	/^static struct spinlock stealmem_lock = SPINLOCK_INITIALIZER;$/;"	v	typeref:struct:spinlock	file:
@@ -6512,10 +6527,15 @@ test_rename	userland/testbin/badcall/bad_rename.c	/^test_rename(void)$/;"	f
 test_rmdir	userland/testbin/badcall/bad_rmdir.c	/^test_rmdir(void)$/;"	f
 test_sbrk	userland/testbin/badcall/bad_sbrk.c	/^test_sbrk(void)$/;"	f
 test_stat	userland/testbin/badcall/bad_stat.c	/^test_stat(void)$/;"	f
+test_status	kern/test/rwtest.c	/^static bool test_status = TEST161_FAIL;$/;"	v	file:
 test_status	kern/test/synchprobs.c	/^static bool test_status = TEST161_FAIL;$/;"	v	file:
 test_status	kern/test/synchtest.c	/^static bool test_status = TEST161_FAIL;$/;"	v	file:
 test_symlink	userland/testbin/badcall/bad_symlink.c	/^test_symlink(void)$/;"	f
 test_time	userland/testbin/badcall/bad_time.c	/^test_time(void)$/;"	f
+test_tread	kern/test/rwtest.c	/^static volatile int32_t test_tread;$/;"	v	file:
+test_treading	kern/test/rwtest.c	/^static volatile int32_t test_treading;$/;"	v	file:
+test_twrite	kern/test/rwtest.c	/^static volatile int32_t test_twrite;$/;"	v	file:
+test_twriting	kern/test/rwtest.c	/^static volatile int32_t test_twriting;$/;"	v	file:
 test_waitpid	userland/testbin/badcall/bad_waitpid.c	/^test_waitpid(void)$/;"	f
 test_write	userland/testbin/badcall/bad_write.c	/^test_write(void)$/;"	f
 testa	kern/test/arraytest.c	/^testa(struct array *a)$/;"	f	file:
@@ -6529,12 +6549,16 @@ testlock	kern/test/synchtest.c	/^static struct lock *testlock = NULL;$/;"	v	type
 testlock2	kern/test/synchtest.c	/^static struct lock *testlock2 = NULL;$/;"	v	typeref:struct:lock	file:
 testlocks	kern/test/synchtest.c	/^static struct lock *testlocks[NCVS];$/;"	v	typeref:struct:lock	file:
 testmenu	kern/main/menu.c	/^static const char *testmenu[] = {$/;"	v	file:
+testrw	kern/test/rwtest.c	/^static struct rwlock *testrw = NULL;$/;"	v	typeref:struct:rwlock	file:
 tests	userland/testbin/malloctest/malloctest.c	/^} tests[] = {$/;"	v	typeref:struct:__anon28	file:
 tests	userland/testbin/sbrktest/sbrktest.c	/^} tests[] = {$/;"	v	typeref:struct:__anon27	file:
 testsem	kern/test/synchtest.c	/^static struct semaphore *testsem = NULL;$/;"	v	typeref:struct:semaphore	file:
 testsem2	kern/test/synchtest.c	/^static struct semaphore *testsem2 = NULL;$/;"	v	typeref:struct:semaphore	file:
+testval1	kern/test/rwtest.c	/^static volatile unsigned long testval1 = 3;$/;"	v	file:
 testval1	kern/test/synchtest.c	/^static volatile unsigned long testval1;$/;"	v	file:
+testval2	kern/test/rwtest.c	/^static volatile unsigned long testval2 = 5;$/;"	v	file:
 testval2	kern/test/synchtest.c	/^static volatile unsigned long testval2;$/;"	v	file:
+testval3	kern/test/rwtest.c	/^static volatile unsigned long testval3 = 7;$/;"	v	file:
 testval3	kern/test/synchtest.c	/^static volatile unsigned long testval3;$/;"	v	file:
 testval4	kern/test/synchtest.c	/^static volatile int32_t testval4;$/;"	v	file:
 tf_a0	kern/arch/mips/include/trapframe.h	/^	uint32_t tf_a0;$/;"	m	struct:trapframe
@@ -6763,6 +6787,8 @@ trapframe	kern/compile/ASST1/includelinks/machine/trapframe.h	/^struct trapframe
 trapframe	kern/compile/ASST1/includelinks/mips/trapframe.h	/^struct trapframe {$/;"	s
 traverse	userland/sbin/dumpsfs/dumpsfs.c	/^traverse(const struct sfs_dinode *sfi, void (*doblock)(uint32_t, uint32_t))$/;"	f	file:
 traverse_ib	userland/sbin/dumpsfs/dumpsfs.c	/^traverse_ib(uint32_t fileblock, uint32_t numblocks, uint32_t block,$/;"	f	file:
+tread_lock	kern/test/rwtest.c	/^static struct spinlock tread_lock;$/;"	v	typeref:struct:spinlock	file:
+treading_lock	kern/test/rwtest.c	/^static struct spinlock treading_lock;$/;"	v	typeref:struct:spinlock	file:
 triple	userland/lib/libtest/triple.c	/^triple(const char *prog)$/;"	f
 true	.root/include/stdbool.h	34;"	d
 true	kern/include/types.h	152;"	d
@@ -6809,6 +6835,8 @@ tv_sec	kern/include/kern/time.h	/^        __time_t tv_sec;        \/* seconds *\
 tv_usec	.root/hostinclude/kern/time.h	/^        __i32 tv_usec;          \/* microseconds *\/$/;"	m	struct:timeval
 tv_usec	.root/include/kern/time.h	/^        __i32 tv_usec;          \/* microseconds *\/$/;"	m	struct:timeval
 tv_usec	kern/include/kern/time.h	/^        __i32 tv_usec;          \/* microseconds *\/$/;"	m	struct:timeval
+twrite_lock	kern/test/rwtest.c	/^static struct spinlock twrite_lock;$/;"	v	typeref:struct:spinlock	file:
+twriting_lock	kern/test/rwtest.c	/^static struct spinlock twriting_lock;$/;"	v	typeref:struct:spinlock	file:
 type	userland/sbin/sfsck/inode.c	/^	int type;$/;"	m	struct:inodeinfo	file:
 type	userland/testbin/frack/check.c	/^	enum fschanges type;$/;"	m	struct:fschange	typeref:enum:fschange::fschanges	file:
 u0	common/gcc-millicode/muldi3.c	106;"	d	file:

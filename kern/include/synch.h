@@ -155,7 +155,7 @@ void cv_broadcast(struct cv *cv, struct lock *lock);
  */
 
 struct rwlock {
-        char *rwlock_name;
+        char *rw_name;
         // add what you need here
         // (don't forget to mark things volatile as needed)
 		struct lock *rw_lock;
