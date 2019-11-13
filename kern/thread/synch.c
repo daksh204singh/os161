@@ -424,12 +424,12 @@ rwlock_release_read(struct rwlock *rwlock)
 	lock_acquire(rwlock->rw_lock);
 
 	rwlock->rw_readers_in--;
-	if (rwlock->rw_writers_wt > 0 && rwlock->rw_readers_in > 0) {
+	if (rwlock->rw_hold_readers == true && rwlock->rw_readers_in > 0) {
 		/*
 		 * When writers are waiting for the lock and 
 		 * readers are still executing, let the readers finish.
 		 */
-	} else if (rwlock->rw_writers_wt > 0  && rwlock->rw_readers_in == 0) {
+	} else if (rwlock->rw_hold_readers == true  && rwlock->rw_readers_in == 0) {
 		/*
 		 * writers are wating, and all the readers are done executing
 		 * Signal each reader and writer from their wait channel 
@@ -468,6 +468,7 @@ rwlock_acquire_write(struct rwlock *rwlock)
 		rwlock->rw_hold_readers = true;
 		cv_wait(rwlock->rw_cvwrite, rwlock->rw_lock);
 	}
+	rwlock->rw_hold_readers = false;
 	rwlock->rw_writer_in = true;
 	rwlock->rw_writers_wt--;
 	
@@ -501,7 +502,6 @@ rwlock_release_write(struct rwlock *rwlock)
 		 * And even cv_signal does not guarantee who is going
 		 * to run so we caring for the order of execution is pointless.
 		 */
-		rwlock->rw_hold_readers = false;
 		cv_signal(rwlock->rw_cvread, rwlock->rw_lock);
 		cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
 	}
