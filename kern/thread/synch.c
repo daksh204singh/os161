@@ -344,8 +344,9 @@ struct rwlock *
 rwlock_create(const char *name)
 {
 	struct rwlock *rwlock = kmalloc(sizeof(*rwlock));
-	if (rwlock == NULL)
+	if (rwlock == NULL) {
 		return NULL;
+	}
 
 	rwlock->rw_name = kstrdup(name);
 	if (rwlock->rw_name == NULL) {
@@ -362,7 +363,7 @@ rwlock_create(const char *name)
 
 	rwlock->rw_cvread = cv_create(rwlock->rw_name);
 	if (rwlock->rw_cvread == NULL) {
-		kfree(rwlock->rw_lock);
+		lock_destroy(rwlock->rw_lock);
 		kfree(rwlock->rw_name);
 		kfree(rwlock);
 		return NULL;
@@ -370,17 +371,18 @@ rwlock_create(const char *name)
 
 	rwlock->rw_cvwrite = cv_create(rwlock->rw_name);
 	if (rwlock->rw_cvwrite == NULL) {
-		kfree(rwlock->rw_cvread);
-		kfree(rwlock->rw_lock);
+		lock_destroy(rwlock->rw_lock);
+		cv_destroy(rwlock->rw_cvwrite);
 		kfree(rwlock->rw_name);
 		kfree(rwlock);
 		return NULL;
 	}
 
-	rwlock->rw_hold_readers = false;
-	rwlock->rw_writer_in = false;
-	rwlock->rw_readers_in = 0;
-	rwlock->rw_writers_wt = 0;
+	rwlock->rw_readin = 0u;
+	rwlock->rw_writein = 0u;
+	rwlock->rw_readwt = 0u;
+	rwlock->rw_writewt = 0u;
+	rwlock->rw_wturnin = random() % RWHASHVAL;
 
 	return rwlock;
 }
@@ -389,12 +391,12 @@ void
 rwlock_destroy(struct rwlock *rwlock)
 {
 	KASSERT(rwlock != NULL);
-	KASSERT(rwlock->rw_writer_in == false && rwlock->rw_readers_in == 0);
+	KASSERT(rwlock->rw_writein == 0u);
+	KASSERT(rwlock->rw_readin == 0u);
 
 	lock_destroy(rwlock->rw_lock);
 	cv_destroy(rwlock->rw_cvread);
 	cv_destroy(rwlock->rw_cvwrite);
-	kfree(rwlock);
 }
 
 void
@@ -403,14 +405,15 @@ rwlock_acquire_read(struct rwlock *rwlock)
 	KASSERT(rwlock != NULL);
 	lock_acquire(rwlock->rw_lock);
 
-	while (rwlock->rw_hold_readers == true || rwlock->rw_writer_in == true) {
-		/*
-		 * hold reader if their is a writer which tried to acquire the rwlock
-		 * before it but was not able too, or hold it if their is a writer waiting.
-		 */
+	rwlock->rw_readwt++;
+	while (rwlock->rw_writein == 1u ||
+			(rwlock->rw_wturnin == 0u && rwlock->rw_writewt > 0u))
 		cv_wait(rwlock->rw_cvread, rwlock->rw_lock);
-	}
-	rwlock->rw_readers_in++;
+	rwlock->rw_readwt--;
+	rwlock->rw_readin++;
+	if (rwlock->rw_wturnin > 0u)
+		rwlock->rw_wturnin--;
+		
 	lock_release(rwlock->rw_lock);
 }
 
@@ -418,34 +421,39 @@ void
 rwlock_release_read(struct rwlock *rwlock)
 {
 	KASSERT(rwlock != NULL);
-	KASSERT(rwlock->rw_readers_in > 0);
-	KASSERT(rwlock->rw_writer_in == false);
+	KASSERT(rwlock->rw_readin > 0u);
+	KASSERT(rwlock->rw_writein == 0u);
 
 	lock_acquire(rwlock->rw_lock);
 
-	rwlock->rw_readers_in--;
-	if (rwlock->rw_hold_readers == true && rwlock->rw_readers_in > 0) {
+	rwlock->rw_readin--;
+	if (rwlock->rw_readin > 0u) {
 		/*
-		 * When writers are waiting for the lock and 
-		 * readers are still executing, let the readers finish.
+		 * Readers are still executing
+		 * Do nothing!!
 		 */
-	} else if (rwlock->rw_hold_readers == true  && rwlock->rw_readers_in == 0) {
+	} else if (rwlock->rw_writewt > 0u && rwlock->rw_wturnin == 0) {
 		/*
-		 * writers are wating, and all the readers are done executing
-		 * Signal each reader and writer from their wait channel 
-		 * using their conditional variables.
-		 * We are doing so because each reader and writer and should get a fair 
-		 * chance to execute.
+		 * Last reader executed, It is the turn of the
+		 * writer to execute.
 		 */
-		rwlock->rw_hold_readers = false;
+		cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
+	} else if (rwlock->rw_writewt > 0u && rwlock->rw_wturnin > 0) {
+		/*
+		 * Writers are waiting, but it is not
+		 * the turn of writer to execute
+		 * Let the readers and writers compete evenly.
+		 */
 		cv_signal(rwlock->rw_cvread, rwlock->rw_lock);
 		cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
-	} else {
+	}
+	else {
 		/*
-		 * No writers are waiting for the rwlock.
-		 * Broadcast all readers.
+		 * No writers are waiting
+		 * Execute a reader
 		 */
-		rwlock->rw_hold_readers = false;
+		if (rwlock->rw_wturnin == 0u) 	// If it is the writers turn, and no writer is present, allow one reader to execute
+			rwlock->rw_wturnin++;
 		cv_broadcast(rwlock->rw_cvread, rwlock->rw_lock);
 	}
 		
@@ -456,22 +464,16 @@ void
 rwlock_acquire_write(struct rwlock *rwlock)
 {
 	KASSERT(rwlock != NULL);
+	
 	lock_acquire(rwlock->rw_lock);
 	
-	rwlock->rw_writers_wt++;
-	while (rwlock->rw_readers_in > 0 || rwlock->rw_writer_in == true) {
-		/*
-		 * If readers are executing or a writer is executing,  make the writer wait for
-		 * the lock, until all the readers who have acquired the
-		 * rwlock are done.
-		 */
-		rwlock->rw_hold_readers = true;
+	rwlock->rw_writewt++;
+	while (rwlock->rw_readin > 0u || rwlock->rw_writein == 1u ||
+		(rwlock->rw_wturnin > 0u && rwlock->rw_readwt > 0u))
 		cv_wait(rwlock->rw_cvwrite, rwlock->rw_lock);
-	}
-	rwlock->rw_hold_readers = false;
-	rwlock->rw_writer_in = true;
-	rwlock->rw_writers_wt--;
-	
+	rwlock->rw_writewt--;
+	rwlock->rw_writein++;
+
 	lock_release(rwlock->rw_lock);
 }
 
@@ -479,32 +481,16 @@ void
 rwlock_release_write(struct rwlock *rwlock)
 {
 	KASSERT(rwlock != NULL);
-	KASSERT(rwlock->rw_writer_in == true);
-	KASSERT(rwlock->rw_readers_in == 0);
-	
-	lock_acquire(rwlock->rw_lock);
+	KASSERT(rwlock->rw_writein == 1u);
+	KASSERT(rwlock->rw_readin == 0u);
 
-	rwlock->rw_writer_in = false;
-	if (rwlock->rw_hold_readers == false && rwlock->rw_writers_wt == 0) { 	// Last writer seen so far
-		/*
-		 * If no writers are waiting, 
-		 * call cv_broadcast on the cvread, to allow
-		 * all readers to use the rwlock.
-		 */
-		cv_broadcast(rwlock->rw_cvread, rwlock->rw_lock);
-	} else {
-		/*
-		 * Writers are waiting, and probaby readers
-		 * are waiting too, though it does not matter
-		 * if they are waiting or not as calling 
-		 * cv_broadcast on the cv_write will not do any good,
-		 * as they require exclusive access.
-		 * And even cv_signal does not guarantee who is going
-		 * to run so we caring for the order of execution is pointless.
-		 */
-		cv_signal(rwlock->rw_cvread, rwlock->rw_lock);
-		cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
-	}
+	lock_acquire(rwlock->rw_lock);
+	
+	rwlock->rw_writein--;
+	uint32_t rand = random() % RWHASHVAL;
+	rwlock->rw_wturnin = rand;
+	cv_signal(rwlock->rw_cvread, rwlock->rw_lock);
+	cv_signal(rwlock->rw_cvwrite, rwlock->rw_lock);
 
 	lock_release(rwlock->rw_lock);
 }

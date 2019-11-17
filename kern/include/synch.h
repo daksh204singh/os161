@@ -154,6 +154,8 @@ void cv_broadcast(struct cv *cv, struct lock *lock);
  * (should be) made internally.
  */
 
+#define RWHASHVAL 6 
+
 struct rwlock {
         char *rw_name;
         // add what you need here
@@ -161,10 +163,11 @@ struct rwlock {
 		struct lock *rw_lock;
 		struct cv *rw_cvread;
 		struct cv *rw_cvwrite;
-		volatile unsigned rw_hold_readers;
-		volatile bool rw_writer_in;
-		volatile unsigned rw_readers_in;
-		volatile unsigned rw_writers_wt;
+		volatile unsigned rw_readin;
+		volatile unsigned rw_writein;
+		volatile unsigned rw_wturnin;
+		volatile unsigned rw_readwt;
+		volatile unsigned rw_writewt;
 };
 
 struct rwlock * rwlock_create(const char *name);
